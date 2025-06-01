@@ -31,7 +31,7 @@ let ai: GoogleGenAI | undefined;
 
 function initializeAiSDK() {
     if (!ai) {
-        const apiKey = AIzaSyAzWiGcQBlNFc9Lo2T9x865idlPFYzFsO4; // Strictly use process.env.API_KEY
+        const apiKey = process.env.API_KEY; // Strictly use process.env.API_KEY
         if (!apiKey) {
             console.error("API_KEY environment variable is not set. The application will not function correctly.");
             if (errorMessageText) errorMessageText.textContent = "Kesalahan Konfigurasi: API Key tidak ditemukan. Aplikasi tidak dapat berfungsi.";
