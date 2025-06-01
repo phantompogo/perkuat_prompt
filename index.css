@@ -1,0 +1,113 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+.loader {
+    border: 5px solid #f3f3f3; /* Light grey */
+    border-top: 5px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+.loader_small { /* Loader yang lebih kecil untuk fitur per item */
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3498db;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.output-box-container {
+    /* Styles for the container of multiple variations if needed */
+    /* This class is primarily a marker now, layout handled by grid in HTML */
+    /* It can be used for common padding/margin if desired for each column */
+    padding: 1rem; /* Example: p-4 equivalent */
+    background-color: #1f2937; /* Example: bg-slate-800, slightly darker than item for contrast */
+    border-radius: 0.5rem; /* Example: rounded-lg */
+}
+
+.output-box-container h3 { /* Ensure heading style consistency if it was missed by Tailwind */
+    /* Tailwind classes in HTML are preferred: text-xl font-semibold text-sky-400 mb-3 */
+}
+
+.variation-item {
+    background-color: #374151; /* bg-slate-700 */
+    padding: 1rem; /* p-4 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05); /* subtle shadow */
+    margin-bottom: 1rem; /* mb-4 */
+    position: relative;
+}
+.variation-item pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    color: #d1d5db; /* text-slate-300 */
+    min-height: 60px; /* Minimum height for each variation */
+}
+.copy-button {
+    transition: background-color 0.2s ease-in-out; /* Only transition background */
+    position: absolute;
+    top: 0.5rem; /* top-2 */
+    right: 0.5rem; /* right-2 */
+    background-color: #4b5563; /* bg-slate-600 */
+    padding: 0.5rem; /* p-2 */
+    border-radius: 0.375rem; /* rounded-md */
+}
+.copy-button:hover {
+    background-color: #6b7280; /* hover:bg-slate-500 */
+}
+
+.copied-feedback {
+    transition: opacity 0.5s ease-in-out;
+    position: absolute;
+    top: 2.75rem; /* Adjusted position */
+    right: 0.5rem; /* right-2 */
+    font-size: 0.75rem; /* text-xs */
+    background-color: #38bdf8; /* sky-400, was green-500 */
+    color: white;
+    padding: 0.25rem 0.5rem; /* px-2 py-1 */
+    border-radius: 0.25rem; /* rounded */
+    opacity: 0;
+}
+.feature-button { /* Tombol untuk fitur tambahan per variasi */
+    margin-top: 0.5rem; /* mt-2 */
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 600; /* font-semibold */
+    padding: 0.25rem 0.5rem; /* py-1 px-2 */
+    border-radius: 0.375rem; /* rounded-md */
+    color: #e2e8f0; /* slate-200 */
+    background-color: #4b5563; /* bg-slate-600 */
+    transition: background-color 0.15s ease-in-out;
+}
+.feature-button:hover {
+     background-color: #6b7280; /* hover:bg-slate-500 */
+}
+.feature-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.feature-result { /* Kontainer untuk hasil fitur tambahan */
+    margin-top: 0.5rem; /* mt-2 */
+    padding: 0.5rem; /* p-2 */
+    background-color: #4b5563; /* bg-slate-600 equivalent */
+    border-radius: 0.25rem; /* rounded */
+    font-size: 0.75rem; /* text-xs */
+    color: #e5e7eb; /* text-slate-200 roughly */
+    white-space: pre-wrap;
+}
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%239ca3af' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1em 1em;
+    padding-right: 2.5rem; /* Ensure space for arrow */
+}
