@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Enhance App - Fitur Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.3.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4 selection:bg-sky-500 selection:text-white">
+
+    <div class="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-3xl">
+        <header class="mb-6 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold text-sky-400">🚀 Prompt Enhance Pro</h1>
+            <p class="text-slate-400 mt-2">Sempurnakan, analisis, dan kembangkan ide prompt Anda untuk gambar dan video. Versi 1.1</p>
+        </header>
+
+        <main>
+            <div class="mb-4">
+                <label for="userPrompt" class="block text-sm font-medium text-slate-300 mb-1">Masukkan Prompt Sederhana Anda:</label>
+                <textarea id="userPrompt" rows="3" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 placeholder-slate-500 text-slate-200 resize-none" placeholder="Contoh: seekor naga di atas gunung" aria-label="User Prompt Input"></textarea>
+            </div>
+
+            <button id="analyzeOriginalPromptButton" class="mb-4 w-full sm:w-auto bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out">
+                ✨ Analisis Prompt Saya
+            </button>
+            <div id="originalPromptAnalysisResult" class="hidden mb-6 p-3 bg-slate-700 rounded-lg text-sm shadow-sm" aria-live="polite">
+                 <div id="originalPromptAnalysisLoader" class="loader_small hidden mx-auto my-1" aria-label="Menganalisis prompt"></div>
+                 <p id="originalPromptAnalysisText" class="text-slate-300"></p>
+            </div>
+
+            <h3 class="text-lg font-semibold text-sky-300 mb-2 mt-2">Tambahkan Detail untuk Prompt Gambar (Opsional):</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="imageQualitySelect" class="block text-sm font-medium text-slate-300 mb-1">Kualitas Gambar:</label>
+                    <select id="imageQualitySelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Image Quality">
+                        <option value="">Pilih Kualitas...</option>
+                        <option value="HD (High Definition 720p)">HD (High Definition 720p)</option>
+                        <option value="UHD (Ultra High Definition 1080p)">UHD (Ultra High Definition 1080p)</option>
+                        <option value="2K">2K</option>
+                        <option value="4K">4K</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="imageDetailSelect" class="block text-sm font-medium text-slate-300 mb-1">Detail Tambahan:</label>
+                    <select id="imageDetailSelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Additional Image Details">
+                        <option value="">Pilih Detail...</option>
+                        <option value="Sharp Detail">Sharp Detail</option>
+                        <option value="Sharp Fokus">Sharp Fokus</option>
+                        <option value="Crisp Detail">Crisp Detail</option>
+                        <option value="Highly Detailed">Highly Detailed</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="imageLightingSelect" class="block text-sm font-medium text-slate-300 mb-1">Pencahayaan (Lighting):</label>
+                    <select id="imageLightingSelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Image Lighting">
+                        <option value="">Pilih Pencahayaan...</option>
+                        <option value="Good lighting">Good lighting</option>
+                        <option value="Perfect lighting">Perfect lighting</option>
+                        <option value="Well-lit">Well-lit</option>
+                        <option value="Studio lighting">Studio lighting</option>
+                        <option value="Natural lighting">Natural lighting</option>
+                        <option value="Soft lighting">Soft lighting</option>
+                        <option value="Dramatic lighting">Dramatic lighting</option>
+                        <option value="Cinematic lighting">Cinematic lighting</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="imageCompositionSelect" class="block text-sm font-medium text-slate-300 mb-1">Komposisi:</label>
+                    <select id="imageCompositionSelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Image Composition">
+                        <option value="">Pilih Komposisi...</option>
+                        <option value="Rule of thirds">Rule of thirds</option>
+                        <option value="Leading lines">Leading lines</option>
+                        <option value="Symmetry">Symmetry</option>
+                        <option value="Depth of field">Depth of field</option>
+                        <option value="Bokeh">Bokeh</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="imageStyleSelect" class="block text-sm font-medium text-slate-300 mb-1">Gaya:</label>
+                    <select id="imageStyleSelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Image Style">
+                        <option value="">Pilih Gaya...</option>
+                        <option value="3D">3D</option>
+                        <option value="Photorealistic">Photorealistic</option>
+                        <option value="Cartoon">Cartoon</option>
+                        <option value="Anime">Anime</option>
+                        <option value="Flat Design">Flat Design</option>
+                        <option value="Paper CutOut">Paper CutOut</option>
+                        <option value="8Bit">8Bit</option>
+                        <option value="Retro Classic">Retro Classic</option>
+                        <option value="Modern">Modern</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="imageNegativeStyleSelect" class="block text-sm font-medium text-slate-300 mb-1">Gaya Buruk (Negative):</label>
+                    <select id="imageNegativeStyleSelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Negative Image Style">
+                        <option value="">Pilih Gaya Buruk...</option>
+                        <option value="No Blur, Not Blurry">No Blur, Not Blurry</option>
+                        <option value="no shadow">No Shadow</option>
+                    </select>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold text-sky-300 mb-2 mt-6">Tambahkan Detail untuk Adegan Video (Opsional):</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="videoShotTypeSelect" class="block text-sm font-medium text-slate-300 mb-1">Jenis Shot Video:</label>
+                    <select id="videoShotTypeSelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Video Shot Type">
+                        <option value="">Pilih Jenis Shot Video...</option>
+                        <option value="Close-up shot">Close-up shot</option>
+                        <option value="Medium shot">Medium shot</option>
+                        <option value="Full shot">Full shot</option>
+                        <option value="Long shot">Long shot</option>
+                        <option value="Extreme close-up">Extreme close-up</option>
+                        <option value="Macro shot">Macro shot</option>
+                        <option value="Wide angle shot">Wide angle shot</option>
+                        <option value="Aerial view">Aerial view</option>
+                        <option value="Drone shot">Drone shot</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="videoCameraMovementSelect" class="block text-sm font-medium text-slate-300 mb-1">Pergerakan Kamera Video:</label>
+                    <select id="videoCameraMovementSelect" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200" aria-label="Video Camera Movement">
+                        <option value="">Pilih Pergerakan Kamera...</option>
+                        <option value="Static shot">Static shot (Kamera diam)</option>
+                        <option value="Zoom in">Zoom in</option>
+                        <option value="Zoom out">Zoom out</option>
+                        <option value="Slow zoom in on [subject]">Slow zoom in on [subject]</option>
+                        <option value="Fast zoom out">Fast zoom out</option>
+                        <option value="Crash zoom">Crash zoom</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <label for="promptDetailSlider" class="block text-sm font-medium text-slate-300">
+                        Tingkat Kedetailan Prompt (1-5):
+                    </label>
+                    <span id="promptDetailValue" class="text-sm font-semibold text-sky-400 bg-slate-700 px-2 py-1 rounded-md">3</span>
+                </div>
+                <input type="range" id="promptDetailSlider" min="1" max="5" step="1" value="3" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer" aria-label="Prompt Detail Level Slider">
+            </div>
+
+            <div class="mb-4 space-y-2 sm:space-y-0 sm:flex sm:space-x-4 items-center">
+                <div class="flex items-center">
+                    <input id="onlyImageCheckbox" type="checkbox" class="h-4 w-4 text-sky-500 bg-slate-700 border-slate-600 rounded focus:ring-sky-500" aria-label="Hanya Prompt Gambar">
+                    <label for="onlyImageCheckbox" class="ml-2 text-sm font-medium text-slate-300">Hanya Prompt Gambar</label>
+                </div>
+                <div class="flex items-center">
+                    <input id="onlyVideoCheckbox" type="checkbox" class="h-4 w-4 text-sky-500 bg-slate-700 border-slate-600 rounded focus:ring-sky-500" aria-label="Hanya Prompt Video">
+                    <label for="onlyVideoCheckbox" class="ml-2 text-sm font-medium text-slate-300">Hanya Prompt Video</label>
+                </div>
+            </div>
+            
+            <button id="enhanceButton" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out mb-2">
+                🚀 Sempurnakan & Buat Variasi Prompt
+            </button>
+
+            <button id="downloadPromptsButton" class="hidden w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out my-4 mx-auto block opacity-50 cursor-not-allowed" disabled>
+                💾 Unduh Semua Prompt (.txt)
+            </button>
+
+            <div id="loadingAnimation" class="hidden text-center py-4">
+                <div class="loader"></div>
+                <p id="loadingText" class="text-slate-300 mt-2">Memproses...</p>
+            </div>
+
+            <div id="errorMessage" class="hidden bg-red-700 p-3 rounded-lg text-sm my-4" role="alert">
+                <p id="errorMessageText"></p>
+            </div>
+
+            <div id="results" class="hidden mt-6">
+                <div id="imagePromptOutputContainer" class="output-box-container rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-slate-700 p-3 flex items-center border-b border-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 text-sky-400 flex-shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-sky-300">Hasil Prompt Gambar</h3>
+                    </div>
+                    <div id="imagePromptVariationsDiv" class="p-1 sm:p-2 md:p-4 bg-slate-800">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                </div>
+
+                <hr id="resultsSeparator" class="border-slate-700 my-6"> 
+                
+                <div id="videoPromptOutputContainer" class="output-box-container mt-6 rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-slate-700 p-3 flex items-center border-b border-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 text-sky-400 flex-shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53V18.2a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 4.5h-9A2.25 2.25 0 002.25 6.75v9A2.25 2.25 0 004.5 18.75z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-sky-300">Hasil Prompt Adegan Video</h3>
+                    </div>
+                     <div id="videoPromptVariationsDiv" class="p-1 sm:p-2 md:p-4 bg-slate-800">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-8 text-center text-sm text-slate-500">
+            <p>&copy; <span id="currentYear"></span> Prompt Enhance Pro. Ditenagai oleh Model Gemini.</p>
+        </footer>
+
+    </div>
+    <audio id="notificationSound" src="notification.mp3" preload="auto"></audio> <!-- Pengguna perlu menyediakan file notification.mp3 -->
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    <script type="module" src="index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
