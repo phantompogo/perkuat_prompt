@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Enhance App - Fitur Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.3.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4 selection:bg-sky-500 selection:text-white">
+
+    <div id="infoPopupOverlay" class="hidden fixed inset-0 bg-black/80 z-[99]" aria-hidden="true"></div>
+    <div id="infoPopup" 
+         class="hidden fixed inset-0 m-auto bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl z-[100] max-w-lg border border-slate-600 flex flex-col items-center"
+         role="dialog" 
+         aria-modal="true" 
+         aria-labelledby="infoPopupTitle"
+         aria-hidden="true">
+        
+        <div class="max-h-[75vh] sm:max-h-[80vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="infoPopupTitle" class="text-2xl sm:text-3xl font-bold text-sky-400 text-center flex-grow">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8 sm:w-10 sm:h-10 mr-2 inline-block animate-pulse_custom">
+                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.04-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                    </svg>
+                    INFORMASI PENGGUNAAN
+                </h2>
+            </div>
+    
+            <div class="space-y-3 text-slate-300 text-sm sm:text-base leading-relaxed">
+                <div class="info-item">
+                    <span class="info-bullet">🚀</span>
+                    <p>Pilih <strong>Jenis API</strong> Untuk Memulai Aplikasi.</p>
+                </div>
+                <hr class="border-slate-700 my-2">
+                <div class="info-item">
+                    <span class="info-bullet">💡</span>
+                    <p>Pilih Opsi <strong>Kata Kunci Ide</strong> (Untuk Menemukan Ide Menarik Dan Bisa Langsung Jadi Prompt Sederhana).</p>
+                </div>
+                <div class="info-item">
+                    <span class="info-bullet">✍️</span>
+                    <p><strong>ATAU</strong> Langsung Tulis <strong>Prompt Sederhana</strong> Kamu (Cukup 1 Kata Atau Lebih).</p>
+                </div>
+                <hr class="border-slate-700 my-2">
+                <div class="info-item">
+                    <span class="info-bullet">🔍</span>
+                    <p><strong>Analisis</strong> Buat Cek Kata Kamu Dan AI Bakal Ngasih Informasi Tambahan (JIKA PERLU).</p>
+                </div>
+                <hr class="border-slate-700 my-2">
+                <div class="info-item">
+                    <span class="info-bullet">🎨</span>
+                    <p>Pilih <strong>Preferensi Detail</strong> (Untuk Hasil Gambar Kamu).</p>
+                </div>
+                <div class="info-item">
+                    <span class="info-bullet">🖼️</span>
+                    <p>Pilih <strong>Jenis/Gaya Gambar</strong> Kamu (Fotografi/Desain Datar/Desain3D).</p>
+                </div>
+                <hr class="border-slate-700 my-2">
+                <div class="info-item">
+                    <span class="info-bullet">📊</span>
+                    <p>Pilih <strong>Tingkat Kedetailan Prompt</strong>: 1 = Sederhana, 5 = Sangat Detail (Up).</p>
+                </div>
+                <hr class="border-slate-700 my-2">
+                <div class="info-item">
+                    <span class="info-bullet">🎞️</span>
+                    <p>Pilih Hasil <strong>Prompt Gambar / VIDEO</strong> / Jangan PILIH Untuk Hasilin PROMPT Gambar + Adegan Videonya.</p>
+                </div>
+                <hr class="border-slate-700 my-2">
+                <div class="info-item">
+                    <span class="info-bullet">🔢</span>
+                    <p>Terakhir Tinggal Pilih <strong>Jumlah Prompt</strong> Dan Klik <strong>Sempurnakan</strong>.</p>
+                </div>
+            </div>
+        </div>
+    
+        <button id="closeInfoPopupButton" class="mt-6 bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2.5 px-8 rounded-lg text-base shadow hover:shadow-md transition duration-150 ease-in-out">
+            Mengerti & Lanjutkan!
+        </button>
+    </div>
+
+    <div class="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-3xl">
+        <div id="popupOverlay" class="hidden fixed inset-0 bg-black/75 z-40" aria-hidden="true"></div>
+
+        <div id="popupMenuContainer" class="hidden fixed bg-slate-700 p-4 sm:p-6 rounded-xl shadow-2xl z-50 min-w-[300px] sm:min-w-[360px] max-w-md border border-slate-600 space-y-3" role="dialog" aria-modal="true" aria-labelledby="photographyPopupTitle">
+            <div class="flex justify-between items-center mb-2">
+                <h2 id="photographyPopupTitle" class="text-xl font-semibold text-sky-400">Pengaturan Fotografi</h2>
+                <button id="closePopupButton" class="text-slate-400 hover:text-sky-400" aria-label="Tutup menu fotografi">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div>
+                <label for="exposureSelect" class="block text-sm font-medium text-slate-300 mb-1">Eksposur/Kecerahan:</label>
+                <select id="exposureSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Low Exposure">Low Exposure</option>
+                    <option value="High Exposure">High Exposure</option>
+                </select>
+            </div>
+            <div>
+                <label for="shutterSelect" class="block text-sm font-medium text-slate-300 mb-1">Shutter/Kecepatan:</label>
+                <select id="shutterSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Shutter Speed Fast">Shutter Speed Fast</option>
+                    <option value="Shutter Speed Slow">Shutter Speed Slow</option>
+                </select>
+            </div>
+            <div>
+                <label for="apertureSelect" class="block text-sm font-medium text-slate-300 mb-1">Aperture/Lensa:</label>
+                <select id="apertureSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Bokeh">Bokeh</option>
+                    <option value="Landscape">Landscape</option>
+                    <option value="Panorama">Panorama</option>
+                    <option value="Bird's-Eye">Bird's-Eye View</option>
+                    <option value="Low Angle">Low Angle View</option>
+                </select>
+            </div>
+            <div>
+                <label for="compositionSelect" class="block text-sm font-medium text-slate-300 mb-1">Komposisi/Posisi:</label>
+                <select id="compositionSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Rule Of Thirds">Rule Of Thirds</option>
+                    <option value="Leading Lines">Leading Lines</option>
+                    <option value="Framing">Framing</option>
+                    <option value="Depth Of Field">Depth Of Field</option>
+                    <option value="Symmetry">Symmetry</option>
+                </select>
+            </div>
+            <div>
+                <label for="lightSelect" class="block text-sm font-medium text-slate-300 mb-1">Light/Cahaya:</label>
+                <select id="lightSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Natural Light">Natural Light</option>
+                    <option value="Artificial Light">Artificial Light</option>
+                    <option value="Studio Light">Studio Light</option>
+                    <option value="Low Light">Low Light</option>
+                </select>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="confirmPhotographySettingsButton" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-6 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out">
+                    OK
+                </button>
+            </div>
+        </div>
+
+        <!-- 3D Design Popup Menu -->
+        <div id="threeDMenuContainer" class="hidden fixed bg-slate-700 p-4 sm:p-6 rounded-xl shadow-2xl z-50 min-w-[300px] sm:min-w-[360px] max-w-md border border-slate-600 space-y-3" role="dialog" aria-modal="true" aria-labelledby="threeDPopupTitle">
+            <div class="flex justify-between items-center mb-2">
+                <h2 id="threeDPopupTitle" class="text-xl font-semibold text-sky-400">Pengaturan Desain 3D</h2>
+                <button id="closeThreeDPopupButton" class="text-slate-400 hover:text-sky-400" aria-label="Tutup menu desain 3D">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div>
+                <label for="threeDStyle1Select" class="block text-sm font-medium text-slate-300 mb-1">Style 1:</label>
+                <select id="threeDStyle1Select" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Realism">Realism</option>
+                    <option value="Low Poly">Low Poly</option>
+                    <option value="High Poly">High Poly</option>
+                    <option value="Stylized">Stylized</option>
+                </select>
+            </div>
+            <div>
+                <label for="threeDStyle2Select" class="block text-sm font-medium text-slate-300 mb-1">Style 2:</label>
+                <select id="threeDStyle2Select" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Cartoony">Cartoony</option>
+                    <option value="Cute">Cute</option>
+                    <option value="Chibi">Chibi</option>
+                </select>
+            </div>
+            <div>
+                <label for="threeDStyle3Select" class="block text-sm font-medium text-slate-300 mb-1">Style 3:</label>
+                <select id="threeDStyle3Select" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Collage">Collage</option>
+                    <option value="Isometric">Isometric</option>
+                    <option value="Abstract">Abstract</option>
+                </select>
+            </div>
+            <div>
+                <label for="threeDLightSelect" class="block text-sm font-medium text-slate-300 mb-1">Lighting/Cahaya (3D):</label>
+                <select id="threeDLightSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Point Light">Point Light</option>
+                    <option value="Spot Light">Spot Light</option>
+                    <option value="Directional Light">Directional Light</option>
+                </select>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="confirmThreeDSettingsButton" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-6 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out">
+                    OK
+                </button>
+            </div>
+        </div>
+
+        <!-- Flat Design Popup Menu -->
+        <div id="flatDesignMenuContainer" class="hidden fixed bg-slate-700 p-4 sm:p-6 rounded-xl shadow-2xl z-50 min-w-[300px] sm:min-w-[360px] max-w-md border border-slate-600 space-y-3" role="dialog" aria-modal="true" aria-labelledby="flatDesignPopupTitle">
+            <div class="flex justify-between items-center mb-2">
+                <h2 id="flatDesignPopupTitle" class="text-xl font-semibold text-sky-400">Pengaturan Desain Datar</h2>
+                <button id="closeFlatDesignPopupButton" class="text-slate-400 hover:text-sky-400" aria-label="Tutup menu desain datar">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div>
+                <label for="flatDesignStyleSelect" class="block text-sm font-medium text-slate-300 mb-1">Style/Gaya:</label>
+                <select id="flatDesignStyleSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="True Flat">True Flat</option>
+                    <option value="Semi Flat">Semi Flat</option>
+                    <option value="Isometric Flat">Isometric Flat</option>
+                    <option value="Subtle Texture Flat">Subtle Texture Flat</option>
+                    <option value="Outlined Flat">Outlined Flat</option>
+                </select>
+            </div>
+            <div>
+                <label for="flatDesignColorSelect" class="block text-sm font-medium text-slate-300 mb-1">Color/Warna:</label>
+                <select id="flatDesignColorSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Solid Color">Solid Color</option>
+                    <option value="Gradien Color">Gradien Color</option>
+                    <option value="Pastel Color">Pastel Color</option>
+                    <option value="Duotone Color">Duotone Color</option>
+                    <option value="Tritone Color">Tritone Color</option>
+                </select>
+            </div>
+            <div>
+                <label for="flatDesignViewSelect" class="block text-sm font-medium text-slate-300 mb-1">View/Tampilan:</label>
+                <select id="flatDesignViewSelect" class="w-full p-2 bg-slate-600 border border-slate-500 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-200">
+                    <option value="">-- Pilih Opsi --</option>
+                    <option value="Minimalism">Minimalism</option>
+                    <option value="Geometric">Geometric</option>
+                    <option value="Two Dimensional">Two Dimensional</option>
+                </select>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button id="confirmFlatDesignSettingsButton" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-6 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out">
+                    OK
+                </button>
+            </div>
+        </div>
+
+
+        <header class="mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-sky-400 inline-flex items-center text-center w-full justify-center">
+                <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzdpendpeWhiemxiZ3c5ZGoyNnB6emF0Z3dlMWtwa2h2NjJuZHBodiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Mlx5hjAPRMlYQ/giphy.gif" alt="Animated rocket" class="h-10 w-10 sm:h-12 sm:w-12 mr-2">
+                Prompt Enhance Pro
+            </h1>
+            <div class="mt-2">
+                <p class="text-slate-400 text-center sm:text-left">Sempurnakan, analisis, dan kembangkan ide prompt Anda untuk gambar dan video. Versi 1.4</p>
+            </div>
+            <div class="flex justify-end mt-2">
+                <a id="donationButton" href="https://trakteer.id/kazoku_fun/tip" target="_blank" rel="noopener noreferrer" 
+                   aria-label="Donasi jika terbantu melalui Trakteer"
+                   class="donation-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 mr-2" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1.25-10.75a.75.75 0 00-1.5 0v1.238c-.085.026-.17.054-.256.084C8.69 8.981 8 9.896 8 11c0 1.104.69 2.019 1.744 2.422.1.036.198.07.306.101v1.227a.75.75 0 001.5 0v-1.238c.085-.026.17-.054.256-.084C12.31 13.019 13 12.104 13 11c0-1.104-.69-2.019-1.744-2.422A4.137 4.137 0 0011.25 8.5V7.25zM9.5 11.25a.75.75 0 000 1.5h.194c.03-.009.06-.018.09-.026a1.51 1.51 0 00.17-.055c.121-.056.176-.083.176-.083V11.25H9.5zm.75-1.5a.75.75 0 00-1.5 0v.318c0 .022.004.044.01.065a2.57 2.57 0 00.158.337c.07.103.147.19.236.262H9.5a.75.75 0 000 1.5h.94c-.067.16-.14.316-.217.465a1.75 1.75 0 00.217.466h.754V13c0-.022-.004-.044-.01-.065a2.57 2.57 0 00-.158-.337 2.056 2.056 0 00-.236-.262H11a.75.75 0 000-1.5h-.94c.067-.16.14-.316.217-.465A1.75 1.75 0 009.722 9.5H9v-.25z" clip-rule="evenodd" />
+                    </svg>
+                    Donasi Jika Terbantu
+                </a>
+            </div>
+        </header>
+
+        <main>
+            <!-- API Choice Section -->
+            <div class="mb-6">
+                <h3 class="text-md font-semibold text-slate-200 mb-3 text-center">Pilih Sumber API Gemini:</h3>
+                <div id="apiChoiceContainer" role="radiogroup" aria-labelledby="apiChoiceTitle" class="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mb-3">
+                    <input type="radio" name="apiSource" id="defaultApiRadioInput" class="sr-only" value="default" checked>
+                    <label id="defaultApiLabel" for="defaultApiRadioInput" role="radio" aria-checked="true" tabindex="0" class="api-choice-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 mr-2 shrink-0 icon-default">
+                            <path fill-rule="evenodd" d="M12.5 6V5.5A2.5 2.5 0 0010 3a2.5 2.5 0 00-2.5 2.5V6H6a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V8a2 2 0 00-2-2h-1.5zm-4 0V5.5A1.5 1.5 0 0110 4a1.5 1.5 0 011.5 1.5V6H8.5z" clip-rule="evenodd" />
+                        </svg>
+                        API Bawaan
+                    </label>
+
+                    <input type="radio" name="apiSource" id="customApiRadioInput" class="sr-only" value="custom">
+                    <label id="customApiLabel" for="customApiRadioInput" role="radio" aria-checked="false" tabindex="0" class="api-choice-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 mr-2 shrink-0 icon-custom">
+                            <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                        </svg>
+                        API Kamu
+                    </label>
+                </div>
+                <div id="customApiKeyInputContainer" class="hidden overflow-hidden transition-all duration-300 ease-in-out space-y-2" style="max-height: 0; opacity: 0;">
+                    <div>
+                        <label for="customApiKeyInput" class="block text-sm font-medium text-slate-300 mb-1">Masukkan Gemini API Key Anda:</label>
+                        <input type="password" id="customApiKeyInput" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 placeholder-slate-500 text-slate-200" placeholder="Masukkan API Key..." aria-describedby="apiKeyStatusMessage">
+                    </div>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="saveApiKeyCheckbox" class="h-4 w-4 text-sky-500 border-slate-500 rounded focus:ring-sky-400 focus:ring-offset-slate-800 bg-slate-700">
+                        <label for="saveApiKeyCheckbox" class="ml-2 text-sm text-slate-300 cursor-pointer">Simpan API Key ini di browser?</label>
+                    </div>
+                </div>
+                 <div id="apiKeyStatusMessage" class="api-status-message hidden mt-2 text-xs text-center" role="status">
+                    <!-- Status message will be injected here -->
+                </div>
+            </div>
+
+            <div class="mb-6"> <!-- Creative Idea Generator Section -->
+                <label for="ideaKeywordsInput" class="block text-sm font-medium text-slate-300 mb-1">Masukkan 1-10 Kata Kunci Ide:</label>
+                <input type="text" id="ideaKeywordsInput" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 placeholder-slate-500 text-slate-200" placeholder="Contoh: naga, hutan ajaib, malam" aria-label="Keywords for Idea Generation">
+                
+                <div class="mt-3 flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0">
+                    <button id="generateImageIdeasButton" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out">
+                        🖼️ Hasilkan Prompt Gambar Kreatif
+                    </button>
+                    <button id="generateVideoIdeasButton" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out">
+                        🎬 Hasilkan Prompt Video Kreatif
+                    </button>
+                </div>
+            
+                <div id="ideaLoadingAnimation" class="hidden text-center py-3">
+                    <div class="loader_small mx-auto my-1" aria-label="Menghasilkan ide"></div>
+                    <p class="text-slate-400 text-xs mt-1">Sedang menghasilkan ide...</p>
+                </div>
+            
+                <div id="ideaErrorMessageContainer" class="hidden bg-red-700/80 p-3 rounded-lg text-sm my-3" role="alert">
+                    <p id="ideaErrorMessageText"></p>
+                </div>
+            
+                <div id="creativeIdeasResultDiv" class="hidden mt-4 p-4 bg-slate-700/60 rounded-lg shadow-sm" aria-live="polite">
+                    <!-- Ideas will be injected here -->
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label for="userPrompt" class="block text-sm font-medium text-slate-300 mb-1">Masukkan Prompt Sederhana Anda:</label>
+                <textarea id="userPrompt" rows="3" class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 placeholder-slate-500 text-slate-200 resize-none" placeholder="Contoh: seekor naga di atas gunung" aria-label="User Prompt Input"></textarea>
+            </div>
+
+            <button id="analyzeOriginalPromptButton" class="w-full sm:w-auto bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out">
+                ✨ Analisis Prompt Saya
+            </button>
+
+            <div id="detailStyleFrame" class="my-5">
+                <h3 class="text-md font-semibold text-slate-200 mb-3">Preferensi Detail Tambahan:</h3>
+                <div class="space-y-3">
+                    <label id="highlyDetailedLabel" for="highlyDetailedCheckbox" class="detail-style-option" role="checkbox" aria-checked="false" tabindex="0">
+                        <input id="highlyDetailedCheckbox" type="checkbox" class="sr-only">
+                        <span class="custom-checkbox-visual" aria-hidden="true">
+                            <svg class="checkmark-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z"/></svg>
+                        </span>
+                        <span class="checkbox-text-content">
+                            <span class="checkbox-label-main">Sangat Detail</span>
+                            <span class="checkbox-subcaption">(Untuk Foto, Ilustrasi, Anime)</span>
+                        </span>
+                    </label>
+
+                    <label id="simpleLabel" for="simpleCheckbox" class="detail-style-option" role="checkbox" aria-checked="false" tabindex="0">
+                        <input id="simpleCheckbox" type="checkbox" class="sr-only">
+                        <span class="custom-checkbox-visual" aria-hidden="true">
+                            <svg class="checkmark-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z"/></svg>
+                        </span>
+                        <span class="checkbox-text-content">
+                            <span class="checkbox-label-main">Simpel</span>
+                            <span class="checkbox-subcaption">(Untuk 3D, Flat Desain, 8Bit)</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div id="originalPromptAnalysisResult" class="hidden mb-6 p-3 bg-slate-700 rounded-lg text-sm shadow-sm" aria-live="polite">
+                 <div id="originalPromptAnalysisLoader" class="loader_small hidden mx-auto my-1" aria-label="Menganalisis prompt"></div>
+                 <p id="originalPromptAnalysisText" class="text-slate-300"></p>
+            </div>
+
+            <div class="mt-2 mb-6 flex flex-col sm:flex-row sm:space-x-3 space-y-2 sm:space-y-0"> 
+                <button id="togglePopupButton" class="flex-1 sm:flex-auto bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out" aria-expanded="false" aria-controls="popupMenuContainer">
+                    📷 Fotografi
+                </button>
+                 <button id="toggleFlatDesignPopupButton" class="flex-1 sm:flex-auto bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out" aria-expanded="false" aria-controls="flatDesignMenuContainer">
+                    ✒️ Desain Datar
+                </button>
+                <button id="toggleThreeDPopupButton" class="flex-1 sm:flex-auto bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out" aria-expanded="false" aria-controls="threeDMenuContainer">
+                    🎨 Desain 3D
+                </button>
+            </div>
+            
+            <div class="mb-6 mt-2"> 
+                <div class="flex justify-between items-center mb-2">
+                    <label for="promptDetailSlider" class="block text-sm font-medium text-slate-300">
+                        Tingkat Kedetailan Prompt (1-5):
+                    </label>
+                    <span id="promptDetailValue" class="text-sm font-semibold text-sky-400 bg-slate-700 px-2 py-1 rounded-md">3</span>
+                </div>
+                <input type="range" id="promptDetailSlider" min="1" max="5" step="1" value="3" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer" aria-label="Prompt Detail Level Slider">
+            </div>
+
+            <!-- Prompt Type Filter Checkboxes -->
+            <div class="mb-6 flex flex-col sm:flex-row sm:space-x-4 items-center justify-center">
+                <label id="onlyImageCheckboxLabel" for="onlyImageCheckbox" class="filter-toggle-option" role="checkbox" aria-checked="false" tabindex="0">
+                    <input id="onlyImageCheckbox" type="checkbox" class="sr-only">
+                    <span class="filter-toggle-visual" aria-hidden="true">
+                         <svg class="checkmark-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z"/></svg>
+                    </span>
+                    <span class="filter-toggle-text">Hanya Prompt Gambar</span>
+                </label>
+                <label id="onlyVideoCheckboxLabel" for="onlyVideoCheckbox" class="filter-toggle-option" role="checkbox" aria-checked="false" tabindex="0">
+                    <input id="onlyVideoCheckbox" type="checkbox" class="sr-only">
+                    <span class="filter-toggle-visual" aria-hidden="true">
+                        <svg class="checkmark-icon" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z"/></svg>
+                    </span>
+                    <span class="filter-toggle-text">Hanya Prompt Video</span>
+                </label>
+            </div>
+            
+            <!-- Prompt Quantity Selection -->
+            <div id="promptQuantityContainer" class="mb-6">
+                <h3 id="promptQuantityTitle" class="prompt-quantity-title text-md font-semibold text-slate-200 mb-3">Pilih Jumlah Prompt Yang Ingin Di Buat:</h3>
+                <div class="prompt-quantity-group" role="radiogroup" aria-labelledby="promptQuantityTitle">
+                    <label for="promptQuantity5Radio" class="prompt-quantity-option" aria-checked="true" tabindex="0">
+                        <input type="radio" id="promptQuantity5Radio" name="promptQuantity" value="5" class="sr-only" checked>
+                        <span class="prompt-quantity-visual" aria-hidden="true"></span>
+                        <span class="prompt-quantity-text">5 Prompt</span>
+                    </label>
+                    <label for="promptQuantity10Radio" class="prompt-quantity-option" aria-checked="false" tabindex="0">
+                        <input type="radio" id="promptQuantity10Radio" name="promptQuantity" value="10" class="sr-only">
+                        <span class="prompt-quantity-visual" aria-hidden="true"></span>
+                        <span class="prompt-quantity-text">10 Prompt</span>
+                    </label>
+                    <label for="promptQuantity15Radio" class="prompt-quantity-option" aria-checked="false" tabindex="0">
+                        <input type="radio" id="promptQuantity15Radio" name="promptQuantity" value="15" class="sr-only">
+                        <span class="prompt-quantity-visual" aria-hidden="true"></span>
+                        <span class="prompt-quantity-text">15 Prompt</span>
+                    </label>
+                    <label for="promptQuantity50Radio" class="prompt-quantity-option" aria-checked="false" tabindex="0">
+                        <input type="radio" id="promptQuantity50Radio" name="promptQuantity" value="50" class="sr-only">
+                        <span class="prompt-quantity-visual" aria-hidden="true"></span>
+                        <span class="prompt-quantity-text">50 Prompt</span>
+                    </label>
+                </div>
+            </div>
+
+            <button id="enhanceButton" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-150 ease-in-out mb-2">
+                🚀 Sempurnakan & Buat Variasi Prompt
+            </button>
+
+            <button id="downloadPromptsButton" class="hidden w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow hover:shadow-md transition duration-150 ease-in-out my-4 mx-auto block opacity-50 cursor-not-allowed" disabled>
+                💾 Unduh Semua Prompt (.txt)
+            </button>
+
+            <div id="loadingAnimation" class="hidden text-center py-4">
+                <div class="loader"></div>
+                <p id="loadingText" class="text-slate-300 mt-2">Memproses...</p>
+            </div>
+
+            <div id="errorMessage" class="hidden bg-red-700 p-3 rounded-lg text-sm my-4" role="alert">
+                <p id="errorMessageText"></p>
+            </div>
+
+            <div id="results" class="hidden mt-6">
+                <div id="imagePromptOutputContainer" class="output-box-container rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-slate-700 p-3 flex items-center border-b border-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 text-sky-400 flex-shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-sky-300">Hasil Prompt Gambar</h3>
+                    </div>
+                    <div id="imagePromptVariationsDiv" class="p-1 sm:p-2 md:p-4 bg-slate-800">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                </div>
+
+                <hr id="resultsSeparator" class="border-slate-700 my-6"> 
+                
+                <div id="videoPromptOutputContainer" class="output-box-container mt-6 rounded-lg shadow-md overflow-hidden">
+                    <div class="bg-slate-700 p-3 flex items-center border-b border-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2 text-sky-400 flex-shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53V18.2a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 4.5h-9A2.25 2.25 0 002.25 6.75v9A2.25 2.25 0 004.5 18.75z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-sky-300">Hasil Prompt Adegan Video</h3>
+                    </div>
+                     <div id="videoPromptVariationsDiv" class="p-1 sm:p-2 md:p-4 bg-slate-800">
+                        <!-- Content will be injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="mt-8 text-center text-sm text-slate-500">
+            <p>&copy; <span id="currentYear"></span> Prompt Enhance Pro. Ditenagai oleh Model Gemini.</p>
+        </footer>
+
+    </div>
+    <audio id="notificationSound" preload="auto"></audio>
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+    </script>
+    <script type="module" src="index.tsx"></script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
